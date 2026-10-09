@@ -153,11 +153,37 @@ This reduced the feature matrix from eight columns to six, which were then used 
 
 ### Decision Tree Classification
 
-*To be added.*
+After extracting and selecting the six features I used a Decision Tree classifier from scikit-learn to classify each CGM observation window as either Meal or No-Meal.
+
+The dataset was divided into training and testing sets using an 80/20 split. I used stratified sampling to preserve the proportion of Meal and No-Meal observations in both sets and set raondom_state=42 to make the split reproducible. 
+
+The Decision Tree model learns a series of decision rules based on the input features to distinguish between the two classes. Each internal node evaluates a feature against a threshold and the resulting branches lead to a predicted classification. 
+
+After evaluating the model on the held out test set I retrained the classifier using the complete feature dataset and saved the trained model using Python's pickle module. 
+
+I also developed a separate testing script that loads new CGM observation windows, applies the same feature extraction and selection process used during training, and generates predictions using the saved Decision Tree model. The predictions were then exported to a CSV file for evaluation.
 
 ### Model Evaluation and Results
 
-*To be added.*
+To evaluate the Decision Tree classifier I used the 20% test set that was excluded from training. The model's predictions were compared against the actual Meal and No-Meal labels using two performance metrics: accuracy and F1 score.
+
+Accuracy measures the proportion of observations that were classified correctly. 
+
+$$
+\text{Accuracy}=\frac{TP+TN}{TP+TN+FP+FN}
+$$
+
+F1 score combines precision and recall into a single metric using their harmonic mean. 
+
+$$
+F_1=2\times\frac{\text{Precision}\times\text{Recall}}{\text{Precision}+\text{Recall}} = \frac{2TP}{2TP+FP+FN}
+$$
+
+Accuracy provides an overall measure of classification performance, while F1 score helps evaluate how effectively the model identifies Meal periods while accounting for both false positives and false negatives.
+
+The trained model was also used to generate predictions for a separate set of CGM observation windows using the testing script.
+
+*Add performance results and visualizations later*
 
 ## Unsupervised Machine Learning
 
