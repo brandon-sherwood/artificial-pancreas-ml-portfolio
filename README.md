@@ -39,10 +39,8 @@ With glucose readings collected every five minutes, a complete day contains 288 
 
 The daily percentages were then averaged across the observation period to obtain an overall set of glucose-control metrics for Manual Mode and Auto Mode.
 
-Test: $x^2$
-
 $$
-X^2
+\text{Percentage} = \frac{\text{Readings satisfying condition}}{288} \times 100
 $$
 
 ### Results
