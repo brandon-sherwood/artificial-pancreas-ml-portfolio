@@ -195,7 +195,7 @@ For this analysis I used CGM and insulin pump data from one patient. I extracted
 
 Unlike the supervised learning portion I used interpolation to fill missing glucose readings within otherwise complete observation windows, while discarding windows that contained no valid glucose measurements. 
 
-Before applying the clustering algorithms, I standardized the eight features using scikiti-learn's StandardScalar to prevent features with larger numerical scales from dominating the distance calculations. 
+Before applying the clustering algorithms, I standardized the eight features using scikit-learn's StandardScalar to prevent features with larger numerical scales from dominating the distance calculations. 
 
 The resulting clusters were evaluated against carbohydrate quantities recorded by the insulin pump to investigate whether similar glucose responses corresponded to similar meal carbohydrate amounts. 
 
@@ -230,12 +230,12 @@ For external validation, I divided the recorded meal carbohydrate quantities int
 SSE measures how closely observations are grouped around their respective cluster centers. 
 
 $$
-SSE=\sum_{k=1}^{K}\sum_{x_i\in C_k}|x_i-\mu_k|^2
+SSE=\sum_{k=1}^{K}\sum_{x_i\in C_k}\lVert x_i-\mu_k\rVert^2
 $$
 
 where $K$ is the number of clusters, $C_k$ represents cluster $k$, and $\mu_k$ is its centroid. 
 
-Lower SSE values indicate more compact clusters. For KMeans I used the model's inertia_attribute. For DBSCAN I calculated the SSE of each identified cluster using its mean feature vector as the cluster center, excluding observations classified as noise. 
+Lower SSE values indicate more compact clusters. For KMeans I used the model's `inertia_` attribute. For DBSCAN I calculated the SSE of each identified cluster using its mean feature vector as the cluster center, excluding observations classified as noise. 
 
 #### Entropy
 
@@ -264,8 +264,6 @@ For both entropy and purity I calculated weighted averages across the clusters t
 These metrics were used to compare the clustering approaches and evaluate whether groups formed from glucose response features corresponded to the recorded carbohydrate quantities.
 
 *Results and visualizations to be added later*
-
-## Key Findings and Lessons Learned
 
 ## Key Findings and Lessons Learned
 
