@@ -1,6 +1,6 @@
 # Artificial Pancreas Data Mining Portfolio
 This repository provides an overview of three projects I completed for CSE 572: Data Mining as part of my Master of Computer Science program at Arizona State University. 
-The projects use continuous glucose monitor (GCM) and insulin pump data to explore different data science and machine learning techniques, including time series analysis, feature engineering, supervised classification, and unsupervised clustering. 
+The projects use continuous glucose monitor (CGM) and insulin pump data to explore different data science and machine learning techniques, including time series analysis, feature engineering, supervised classification, and unsupervised clustering. 
 Each project builds concepts from the previous one, progressing from a statistical analysis of glucose measurements to training and evaluating machine learning models.
 
 ## CGM Data Analysis
@@ -39,7 +39,11 @@ With glucose readings collected every five minutes, a complete day contains 288 
 
 The daily percentages were then averaged across the observation period to obtain an overall set of glucose-control metrics for Manual Mode and Auto Mode.
 
-The percentage was calculated as $P = \frac{n}{288} \times 100$.
+Test: $x^2$
+
+$$
+X^2
+$$
 
 ### Results
 
