@@ -1,28 +1,30 @@
-# Artificial Pancreas Data Mining Portfolio
-This repository provides an overview of three projects I completed for CSE 572: Data Mining as part of my Master of Computer Science program at Arizona State University. 
-The projects use continuous glucose monitor (CGM) and insulin pump data to explore different data science and machine learning techniques, including time series analysis, feature engineering, supervised classification, and unsupervised clustering. 
-Each project builds concepts from the previous one, progressing from a statistical analysis of glucose measurements to training and evaluating machine learning models.
+# Artificial Pancreas: Time-Series Analysis & Machine Learning
 
-## CGM Data Analysis
+## Overview
 
-### Overview
-This analysis focused on continuous glucose monitor (CGM) and insulin pump data collected from an artificial pancreas system. The objective was to compare how effectively blood glucose levels were maintained during Manual Mode compared to Auto Mode operation. 
+This repository provides an overview of a data mining and machine learning project I completed for CSE 572: Data Mining as part of my Master of Computer Science program at Arizona State University.
 
-The data consisted of glucose measurements recorded every 5 minutes and separate insulin pump records containing timestamps and operating events. Since these came from two different devices the datasets needed to be synchronized before they could be analyzed. 
+The project uses continuous glucose monitor (CGM) and insulin pump data to explore different data science and machine learning techniques, including time-series analysis, feature engineering, supervised classification, and unsupervised clustering.
 
-The analysis examined glucose levels across different times of day and calculated statistical metrics to compare the two operating modes. 
+The analysis progresses from statistical evaluation of glucose measurements to training and evaluating machine learning models.
 
-### Data and Preprocessing
-The analysis used two datasets: CGM readings collected every five minutes and insulin pump records containing timestamps and operating events. 
+## Dataset and Preprocessing
+
+The analysis used two datasets: continuous glucose monitor (CGM) readings collected every five minutes and insulin pump records containing timestamps and operating events.
 
 Using Python and pandas, I combined the separate date and time columns into timestamps and sorted the data chronologically. Since the CGM and insulin pump operated independently, their timestamps did not align exactly. I identified the first transition into Auto Mode from the insulin pump records and matched it to the next available CGM reading.
 
-After separating the data into Manual Mode and Auto Mode, I grouped the glucose readings by day and divided them into overnight (12AM to 6AM), daytime (6AM to 12AM), and whole day intervals. The CGM dataset also contained missing glucose readings (NaN values), making incomplete sensor coverage an important consideration when calculating daily statistics.
+After separating the data into Manual Mode and Auto Mode, I grouped the glucose readings by day and divided them into overnight (12 AM to 6 AM), daytime (6 AM to 12 AM), and whole-day intervals.
 
-The dataset also contained missing glucose measurements (NaN values). I removed observations with missing glucose readings using pandas dropna() while retaining the remaining valid measurements. Rather than estimating missing values through interpolation, the statistical calculations used the available readings and the expected 288 measurements per day as the reference for calculating percentages.
+The dataset also contained missing glucose measurements (NaN values). For the initial statistical analysis, I removed observations with missing glucose readings using pandas `dropna()` while retaining the remaining valid measurements. Rather than estimating missing values through interpolation, the statistical calculations used the available readings and the expected 288 measurements per day as the reference for calculating percentages.
 
-### Methods and Metrics
-To compare glucose control between Manual Mode and Auto Mode, I calculated six metrics based on glucose concentration thresholds.
+## Exploratory Data Analysis
+
+### Glucose Control Metrics
+
+The initial analysis focused on comparing how effectively blood glucose levels were maintained during Manual Mode versus Auto Mode operation.
+
+To compare glucose control between these operating modes, I calculated six metrics based on glucose concentration thresholds.
 
 | Metric | Glucose Range |
 |---|---|
@@ -43,20 +45,56 @@ $$
 \text{Percentage} = \frac{\text{Readings satisfying condition}}{288} \times 100
 $$
 
-### Results
+### Manual vs. Auto Mode Results
 
-## Machine Model Training
+The analysis produced 36 glucose-control metrics: 18 for Manual Mode and 18 for Auto Mode. These results were used to compare the percentage of time spent within different glucose ranges under each operating mode.
 
-### Overview
+The following figures compare the glucose-control metrics for Manual Mode and Auto Mode across the observation period.
 
-### Methods
+*Visualizations to be added.*
 
-### Results
+## Feature Engineering
 
-## Cluster Validation
+### Time-Domain Features
 
-### Overview
+*To be added.*
 
-### Methods
+### Frequency-Domain Features (FFT)
 
-### Results
+*To be added.*
+
+### Feature Selection
+
+*To be added.*
+
+## Supervised Machine Learning
+
+### Decision Tree Classification
+
+*To be added.*
+
+### Model Evaluation and Results
+
+*To be added.*
+
+## Unsupervised Machine Learning
+
+### KMeans and DBSCAN Clustering
+
+*To be added.*
+
+### Cluster Validation and Results
+
+*To be added.*
+
+## Key Findings and Lessons Learned
+
+*To be added.*
+
+## Technologies Used
+
+*To be added.*
+
+## Academic Integrity
+
+*To be added.*
