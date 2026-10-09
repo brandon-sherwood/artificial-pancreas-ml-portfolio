@@ -10,13 +10,29 @@ The analysis progresses from statistical evaluation of glucose measurements to t
 
 ## Dataset and Preprocessing
 
-The analysis used two datasets: continuous glucose monitor (CGM) readings collected every five minutes and insulin pump records containing timestamps and operating events.
+### CGM and Insulin Pump Data
+
+The analysis used two datasets: CGM readings collected every five minutes and insulin pump records containing timestamps and operating events.
 
 Using Python and pandas, I combined the separate date and time columns into timestamps and sorted the data chronologically. Since the CGM and insulin pump operated independently, their timestamps did not align exactly. I identified the first transition into Auto Mode from the insulin pump records and matched it to the next available CGM reading.
 
 After separating the data into Manual Mode and Auto Mode, I grouped the glucose readings by day and divided them into overnight (12 AM to 6 AM), daytime (6 AM to 12 AM), and whole-day intervals.
 
 The dataset also contained missing glucose measurements (NaN values). For the initial statistical analysis, I removed observations with missing glucose readings using pandas `dropna()` while retaining the remaining valid measurements. Rather than estimating missing values through interpolation, the statistical calculations used the available readings and the expected 288 measurements per day as the reference for calculating percentages.
+
+### Meal and No-Meal Window Extraction
+
+for the supervised machine learning portion of the project I used CGM and insulin pump data from two patients to identify periods associated with meal consumption and periods without meals. 
+
+I identified meal events using the carbohydrate entries recorded by the insulin pump, excluding entries with missing or zero carbohydrate values. To avoid overlapping meal periods I excluded meal events that were followed by another recorded meal within two hours. 
+
+For each remaining meal event, I extracted a CGM observation window starting 30 minutes before the meal and ending two hours afterward. Each meal window contained 30 glucose measurements sampled at five minute intervals.
+
+For No-Meal periods I extracted two hour windows beginning at least two hours after a recorded meal, provided there was sufficient time before the next meal. Each No-Meal window contained 24 glucose measurements. 
+
+I then removed any windows that did not contain the expected number of readings or had missing glucose values. Unlike the initial statistical analysis, which retained individual valid readings, this step required complete observation windows to ensure consistent input dimensions for feature extraction. 
+
+The resulting Meal and No-Meal windows were used to calculate the time domain and frequency domain features for the classification model. 
 
 ## Exploratory Data Analysis
 
@@ -55,17 +71,83 @@ The following figures compare the glucose-control metrics for Manual Mode and Au
 
 ## Feature Engineering
 
-### Time-Domain Features
+After completing the initial statistical analysis, I used the extracted Meal and No-Meal observation windows to build a supervised classification model. Since the raw CGM measurements were time series, I used feature engineering to represent each window using a set of numerical values describing the glucose response.
 
-*To be added.*
+### Time-Domain Features
+To prepare the CGM data for machine learning I extracted numerical features that described how glucose levels change over time. These features allow a classification model to identify patterns associated with meal consumption rather than relying on the raw glucose measurements alone. 
+
+Four time domain features were extracted:
+
+#### Time to Peak ($\tau$)
+
+This measures the time required for the glucose concentration to reach its max value within the observation window. Since the CGM records measurements every 5 minutes, the time to peak was calculated as:
+
+$$
+\tau = i_{\max}\times5
+$$
+
+where $i_{\max}$ is the index of the highest glucose reading and $\tau$ is measured in minutes.
+
+#### Normalized Peak Difference
+
+This measures the relative increase in glucose concentration from the beginning of the observation window to its max value.
+
+$$
+\Delta G_{\text{norm}}=\frac{G_{\max}-G_0}{G_0}
+$$
+
+Normalizing by the initial glucose concentration allows glucose responses with different starting values to be compared.
+
+#### Maximum First Difference
+
+This feature captures the largest increase between consecutive glucose measurements, which were recorded at five-minute intervals.
+
+$$
+D_1=\max(\Delta G_t),\qquad \Delta G_t=G_{t+1}-G_t
+$$
+
+It provides a measure of how rapidly glucose increases during the observation window.
+
+#### Maximum Second Difference
+
+The second difference measures how the change in glucose concentration varies between consecutive intervals.
+
+$$
+D_2=\max(\Delta^2G_t),\qquad \Delta^2G_t=G_{t+2}-2G_{t+1}+G_t
+$$
+
+This captures changes in the slope of the glucose response, providing additional information about the shape of the time series. For both features, the maximum is taken over all calculated differences within the observation window.
 
 ### Frequency-Domain Features (FFT)
 
-*To be added.*
+In addition to time-domain features, I used NumPy's Fast Fourier Transform (`np.fft.fft`) to transform the CGM time series into the frequency domain. This allowed me to identify dominant frequency components that describe how glucose levels vary over time.
+
+I calculated the magnitude of each Fourier coefficient and normalized it by the number of samples:
+
+$$
+M_k=\frac{|X_k|}{N}
+$$
+
+where \(X_k\) represents the complex Fourier coefficient at frequency index \(k\), and \(N\) is the number of glucose measurements in the observation window.
+
+The zero-frequency component (DC), which represents the signal's average glucose level, was excluded. I also retained only positive frequencies to avoid the redundant negative-frequency components present in the Fourier transform of a real-valued signal.
+
+From the remaining frequency components, I selected the two with the largest magnitudes and extracted four features:
+
+1. Magnitude of the strongest frequency component
+2. Frequency of the strongest component
+3. Magnitude of the second-strongest component
+4. Frequency of the second-strongest component
+
+These features provide information about the relative strength and frequency of glucose fluctuations, complementing the time-domain features that describe glucose peaks and rates of change.
 
 ### Feature Selection
 
-*To be added.*
+After extracting the four time domain features and four frequency domain features, each Meal and No-Meal observation window was represented by eight numerical features.
+
+For the final supervised classification model I removed the two FFT frequency features and retained the six remaining features: time to peak, normalized peak difference, maximum first difference, maximum second difference, and the magnitudes of the two strongest positive frequency components. 
+
+This reduced the feature matrix from eight columns to six, which were then used to train and evaluate the Decision Tree classifier.
 
 ## Supervised Machine Learning
 
