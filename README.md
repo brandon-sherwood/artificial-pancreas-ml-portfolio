@@ -187,9 +187,37 @@ The trained model was also used to generate predictions for a separate set of CG
 
 ## Unsupervised Machine Learning
 
+After completing the supervised classification analysis I explored unsupervised machine learning techniques to identify patterns in glucose responses associated with meal consumption. 
+
+Unlike the Decision Tree classifier, which was trained using known Meal and No-Meal labels, this analysis used KMeans and DBSCAN clustering to group meal associated CGM observations based on similarities in their extracted features.
+
+For this analysis I used CGM and insulin pump data from one patient. I extracted 30-reading meal windows and reused all eight features developed previously, including the two FFT frequency features that were excluded from the supervised classification model.
+
+Unlike the supervised learning portion I used interpolation to fill missing glucose readings within otherwise complete observation windows, while discarding windows that contained no valid glucose measurements. 
+
+Before applying the clustering algorithms, I standardized the eight features using scikiti-learn's StandardScalar to prevent features with larger numerical scales from dominating the distance calculations. 
+
+The resulting clusters were evaluated against carbohydrate quantities recorded by the insulin pump to investigate whether similar glucose responses corresponded to similar meal carbohydrate amounts. 
+
 ### KMeans and DBSCAN Clustering
 
-*To be added.*
+I applied two unsupervised learning algorithms, KMeans and DBSCAN, to the standardized feature dataset to identify patterns in glucose responses associated with meal consumption.
+
+#### KMeans Clustering 
+
+KMeans partitions the dataset into a specified number of clusters by assigning observations to the nearest cluster centroid. The algorithm iteratively updates the centroids to minimize the sum of squared distances between observations and their assigned cluster centers.
+
+I used scikit-learn's `KMeans` implementation with six clusters, corresponding to the number of carbohydrate categories used for subsequent cluster validation. I also set `random_state=42` for reproducibility and `n_init=10` to initialize the algorithm multiple times.
+
+#### DBSCAN Clustering
+
+DBSCAN (Density-Based Spatial Clustering of Applications with Noise) identifies clusters based on regions of high data density rather than distances to predefined centroids. Unlike KMeans, DBSCAN does not require specifying the number of clusters beforehand and can identify observations that do not belong to a sufficiently dense region as noise.
+
+I used scikit-learn's `DBSCAN` implementation with `eps=1.2` and `min_samples=5`. These parameters control the neighborhood radius and minimum number of neighboring observations required to identify dense regions.
+
+My implementation also included an additional step to handle situations where DBSCAN produced fewer clusters than the number of carbohydrate categories. In those cases, I calculated the sum of squared errors (SSE) for each cluster and used KMeans to split the cluster with the largest SSE. This process was repeated until the desired number of clusters was reached, while leaving DBSCAN's noise observations unassigned.
+
+Both clustering approaches were then evaluated using SSE, entropy, and purity to compare cluster compactness and their relationship to recorded carbohydrate quantities.
 
 ### Cluster Validation and Results
 
